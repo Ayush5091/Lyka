@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 interface CoreProps {
   className?: string;
   size?: number;
-  tealOpacity?: number; // Beat 2: opacity of glacier-teal context state
-  pulseOpacity?: number; // Beat 2: opacity of inward pulsing lines
+  tealOpacity?: number;  // Beat 2: glacier-teal context state
+  pulseOpacity?: number; // Beat 2: inward pulsing lines
+  coralOpacity?: number; // Beat 3: ember-coral synthesis state
 }
 
 export default function Core({
@@ -15,6 +16,7 @@ export default function Core({
   size = 320,
   tealOpacity = 0,
   pulseOpacity = 0,
+  coralOpacity = 0,
 }: CoreProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -54,6 +56,12 @@ export default function Core({
         style={{ opacity: tealOpacity * 0.4 }}
       />
 
+      {/* Layered Ember Coral background glow for Beat 3 */}
+      <div
+        className="absolute inset-0 rounded-full bg-ember-coral blur-3xl transition-opacity duration-300"
+        style={{ opacity: coralOpacity * 0.4 }}
+      />
+
       {/* Main living SVG Orb */}
       <svg
         viewBox="0 0 200 200"
@@ -76,6 +84,14 @@ export default function Core({
             <stop offset="0%" stopColor="#80FFF0" />
             <stop offset="35%" stopColor="var(--glacier-teal)" />
             <stop offset="75%" stopColor="#0B5C52" />
+            <stop offset="100%" stopColor="#0A0B10" />
+          </radialGradient>
+
+          {/* Coral radial gradient (ember-coral state) */}
+          <radialGradient id="core-coral" cx="45%" cy="40%" r="55%" fx="35%" fy="30%">
+            <stop offset="0%" stopColor="#FFA085" />
+            <stop offset="35%" stopColor="var(--ember-coral)" />
+            <stop offset="75%" stopColor="#96280E" />
             <stop offset="100%" stopColor="#0A0B10" />
           </radialGradient>
 
@@ -117,14 +133,25 @@ export default function Core({
           filter="url(#organic-deform)"
         />
 
-        {/* Transition Overlay Layer: Glacier Teal */}
+        {/* Transition Overlay Layer 1: Glacier Teal */}
         <circle
           cx="100"
           cy="100"
           r="80"
           fill="url(#core-teal)"
           filter="url(#organic-deform)"
-          style={{ opacity: tealOpacity }}
+          style={{ opacity: Math.max(0, tealOpacity - coralOpacity) }}
+          className="transition-opacity duration-75"
+        />
+
+        {/* Transition Overlay Layer 2: Ember Coral */}
+        <circle
+          cx="100"
+          cy="100"
+          r="80"
+          fill="url(#core-coral)"
+          filter="url(#organic-deform)"
+          style={{ opacity: coralOpacity }}
           className="transition-opacity duration-75"
         />
 
