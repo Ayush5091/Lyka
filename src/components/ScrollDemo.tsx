@@ -17,12 +17,15 @@ export default function ScrollDemo() {
   const placeholderRef = useRef<HTMLDivElement>(null);
   const coreWrapperRef = useRef<HTMLDivElement>(null);
 
+  const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [targetRect, setTargetRect] = useState({ top: 0, left: 0, width: 0, height: 0 });
 
-  // Responsive & prefers-reduced-motion checks
+  // Handle client-side mount & media queries to prevent SSR hydration duplication/mismatch
   useEffect(() => {
+    setMounted(true);
+
     const checkViewport = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -46,7 +49,7 @@ export default function ScrollDemo() {
 
   // Update target coordinates of the placeholder tile
   useEffect(() => {
-    if (isMobile || reduceMotion) return;
+    if (!mounted || isMobile || reduceMotion) return;
 
     const updateCoords = () => {
       if (placeholderRef.current && stickyRef.current) {
@@ -61,7 +64,6 @@ export default function ScrollDemo() {
       }
     };
 
-    // Delay slightly to ensure layout completes rendering
     const timer = setTimeout(updateCoords, 100);
     window.addEventListener("resize", updateCoords);
 
@@ -69,11 +71,13 @@ export default function ScrollDemo() {
       clearTimeout(timer);
       window.removeEventListener("resize", updateCoords);
     };
-  }, [isMobile, reduceMotion]);
+  }, [mounted, isMobile, reduceMotion]);
 
   // GSAP ScrollTrigger setup
   useEffect(() => {
-    // If mobile or reduced-motion, let's use a simple viewport entrance animation
+    if (!mounted) return;
+
+    // If mobile or reduced-motion, use a simple viewport entrance animation
     if (isMobile || reduceMotion) {
       if (coreWrapperRef.current) {
         gsap.fromTo(
@@ -140,14 +144,60 @@ export default function ScrollDemo() {
     return () => {
       ctx.revert();
     };
-  }, [isMobile, reduceMotion, targetRect]);
+  }, [mounted, isMobile, reduceMotion, targetRect]);
 
-  // Simple participants mock data
   const participants = [
     { name: "John Doe", role: "Product Manager", initials: "JD" },
     { name: "Alice Smith", role: "Lead Designer", initials: "AS" },
     { name: "Sarah Connor", role: "Security Engineer", initials: "SC" },
   ];
+
+  // Render a clean static skeleton for SSR/Hydration matching
+  if (!mounted) {
+    return (
+      <div className="relative bg-void w-full h-[300vh]" id="how-it-works">
+        <div className="w-full flex flex-col justify-center items-center overflow-hidden sticky top-0 h-screen">
+          <div className="max-w-7xl mx-auto px-6 md:px-12 w-full flex flex-col items-center">
+            <div className="text-center mb-10">
+              <span className="font-mono text-xs uppercase tracking-widest text-glacier-teal">
+                The Attentive Listener
+              </span>
+              <h2 className="font-display text-4xl md:text-5xl mt-2 text-moon">
+                Attending as a presence
+              </h2>
+            </div>
+            <div className="w-full max-w-4xl bg-slate/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col space-y-6">
+              <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 opacity-50" />
+                  <span className="font-body text-sm font-medium text-moon">
+                    Q3 Strategy Alignment
+                  </span>
+                </div>
+                <div className="font-mono text-xs text-moon/40">10:00 AM - 11:00 AM</div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 min-h-[160px] md:min-h-[220px]">
+                {participants.map((person, idx) => (
+                  <div key={idx} className="bg-slate/80 border border-white/5 rounded-xl p-4 flex flex-col justify-between items-center text-center">
+                    <div className="w-12 h-12 rounded-full bg-moon/10 border border-white/10 flex items-center justify-center font-mono text-moon text-sm font-semibold">
+                      {person.initials}
+                    </div>
+                    <div className="font-body text-sm font-medium text-moon mt-4">{person.name}</div>
+                  </div>
+                ))}
+                <div className="border border-white/5 border-dashed bg-void/30 rounded-xl p-4 flex flex-col justify-between items-center text-center relative min-h-[160px]">
+                  <div className="mt-auto">
+                    <div className="font-body text-sm font-medium text-moon/60">Lyka</div>
+                    <div className="font-mono text-[10px] text-dusk-indigo mt-1">connecting...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -167,7 +217,6 @@ export default function ScrollDemo() {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 w-full flex flex-col items-center">
           
-          {/* Header info */}
           <div className="text-center mb-10">
             <span className="font-mono text-xs uppercase tracking-widest text-glacier-teal">
               The Attentive Listener
@@ -177,10 +226,8 @@ export default function ScrollDemo() {
             </h2>
           </div>
 
-          {/* Meeting Window Mockup */}
           <div className="w-full max-w-4xl bg-slate/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col space-y-6">
             
-            {/* Mock Meeting Header */}
             <div className="flex items-center justify-between border-b border-white/5 pb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -193,10 +240,8 @@ export default function ScrollDemo() {
               </div>
             </div>
 
-            {/* Participants Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 min-h-[160px] md:min-h-[220px]">
               
-              {/* Human Participants */}
               {participants.map((person, idx) => (
                 <div
                   key={idx}
@@ -216,15 +261,13 @@ export default function ScrollDemo() {
                 </div>
               ))}
 
-              {/* Lyka Participant Slot (Placeholder for Core) */}
               <div
                 ref={placeholderRef}
                 className="border border-white/5 border-dashed bg-void/30 rounded-xl p-4 flex flex-col justify-between items-center text-center relative min-h-[160px]"
               >
-                {/* When mobile or reduced motion, Core is mounted directly inside the slot */}
                 {(isMobile || reduceMotion) && (
                   <div ref={coreWrapperRef} className="w-24 h-24 flex items-center justify-center">
-                    <Core size={96} />
+                    <Core className="w-full h-full" />
                   </div>
                 )}
                 
@@ -250,7 +293,7 @@ export default function ScrollDemo() {
             ref={coreWrapperRef}
             className="absolute pointer-events-none z-30 flex items-center justify-center transition-all duration-75"
           >
-            <Core size={180} className="w-full h-full" />
+            <Core className="w-full h-full" />
           </div>
         )}
 

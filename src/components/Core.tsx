@@ -23,13 +23,15 @@ export default function Core({ className, size = 320 }: CoreProps) {
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
+  const hasCustomSize = className?.split(" ").some(c => c.startsWith("w-") || c.startsWith("h-") || c.startsWith("lg:w-") || c.startsWith("xl:w-") || c.startsWith("sm:w-") || c.startsWith("md:w-"));
+
   return (
     <div
       className={cn(
         "relative flex items-center justify-center select-none pointer-events-none",
         className
       )}
-      style={{ width: size, height: size }}
+      style={hasCustomSize ? undefined : { width: size, height: size }}
     >
       {/* Background glow shadow layer */}
       <div
