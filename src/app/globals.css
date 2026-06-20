@@ -80,3 +80,14 @@ body {
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border);
 }
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
