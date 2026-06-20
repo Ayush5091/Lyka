@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import ScrollDemo from "@/components/ScrollDemo";
 import Pricing from "@/components/Pricing";
+import Footer from "@/components/Footer";
 
 export default function Page() {
   return (
@@ -8,6 +9,7 @@ export default function Page() {
       <Hero />
       <ScrollDemo />
       <Pricing />
+      <Footer />
     </main>
   );
 }
