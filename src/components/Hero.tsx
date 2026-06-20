@@ -12,7 +12,7 @@ export default function Hero() {
         
         {/* Mobile: Core centered at top. Desktop: Right-of-center off-center */}
         <div className="lg:col-span-5 lg:order-last flex justify-center lg:justify-end xl:justify-center">
-          <Core size={320} className="sm:w-[380px] sm:h-[380px] lg:w-[420px] lg:h-[420px] xl:w-[460px] xl:h-[460px]" />
+          <Core size={280} className="w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] lg:w-[420px] lg:h-[420px] xl:w-[460px] xl:h-[460px]" />
         </div>
 
         {/* Hero Text Content */}

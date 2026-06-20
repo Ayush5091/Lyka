@@ -70,7 +70,7 @@ export default function Navigation() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-moon hover:text-moon/80 p-2 z-55 relative cursor-pointer focus:outline-none"
+            className="md:hidden text-moon hover:text-moon/80 p-3 min-w-[44px] min-h-[44px] flex items-center justify-center z-55 relative cursor-pointer focus:outline-none"
             aria-label={isOpen ? "Close Menu" : "Open Menu"}
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -88,7 +88,7 @@ export default function Navigation() {
             transition={{ duration: 0.4, ease: [0.45, 0, 0.15, 1] }}
             className="fixed inset-0 z-40 bg-void/98 backdrop-blur-xl flex flex-col justify-between px-6 pt-32 pb-16 md:hidden"
           >
-            <div className="flex flex-col space-y-8">
+            <div className="flex flex-col space-y-4">
               {navLinks.map((link, idx) => (
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -99,7 +99,7 @@ export default function Navigation() {
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="font-display text-4xl text-moon hover:text-ember-coral transition-colors"
+                    className="font-display text-4xl text-moon hover:text-ember-coral transition-colors py-3 block"
                   >
                     {link.label}
                   </Link>

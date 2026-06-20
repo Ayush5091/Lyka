@@ -39,12 +39,12 @@ export default function Footer() {
             <h4 className="font-mono text-xs uppercase tracking-widest text-glacier-teal">
               Product
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               {links.product.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="font-body text-sm text-moon/65 hover:text-moon transition-colors"
+                    className="font-body text-sm text-moon/65 hover:text-moon transition-colors py-2.5 block"
                   >
                     {link.label}
                   </Link>
@@ -58,12 +58,12 @@ export default function Footer() {
             <h4 className="font-mono text-xs uppercase tracking-widest text-glacier-teal">
               Company
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-1">
               {links.company.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="font-body text-sm text-moon/65 hover:text-moon transition-colors"
+                    className="font-body text-sm text-moon/65 hover:text-moon transition-colors py-2.5 block"
                   >
                     {link.label}
                   </Link>
