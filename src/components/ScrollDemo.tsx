@@ -16,11 +16,20 @@ export default function ScrollDemo() {
   const stickyRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
   const coreWrapperRef = useRef<HTMLDivElement>(null);
+  
+  // Refs for Beat 2 elements
+  const chip1Ref = useRef<HTMLDivElement>(null);
+  const chip2Ref = useRef<HTMLDivElement>(null);
+  const beat2CopyRef = useRef<HTMLDivElement>(null);
 
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [targetRect, setTargetRect] = useState({ top: 0, left: 0, width: 0, height: 0 });
+
+  // Core visual state (animated by GSAP)
+  const [tealOpacity, setTealOpacity] = useState(0);
+  const [pulseOpacity, setPulseOpacity] = useState(0);
 
   // Handle client-side mount & media queries to prevent SSR hydration duplication/mismatch
   useEffect(() => {
@@ -77,7 +86,7 @@ export default function ScrollDemo() {
   useEffect(() => {
     if (!mounted) return;
 
-    // If mobile or reduced-motion, use a simple viewport entrance animation
+    // Mobile / Reduced Motion: Simple viewport entry animation
     if (isMobile || reduceMotion) {
       if (coreWrapperRef.current) {
         gsap.fromTo(
@@ -114,6 +123,9 @@ export default function ScrollDemo() {
     });
 
     const ctx = gsap.context(() => {
+      // Core animation values object for GSAP to animate state variables
+      const coreState = { teal: 0, pulse: 0 };
+
       // Pinned timeline spanning 300vh
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -137,8 +149,93 @@ export default function ScrollDemo() {
         ease: "power1.inOut",
       }, 0);
 
+      // Beat 2: Recalling context / RAG (25% to 60% of timeline)
+      
+      // Core color transition: dusk-indigo to glacier-teal (starts 25%, fully teal by 45%)
+      tl.to(coreState, {
+        teal: 1,
+        pulse: 1,
+        onUpdate: () => {
+          setTealOpacity(coreState.teal);
+          setPulseOpacity(coreState.pulse);
+        },
+        duration: 0.20,
+      }, 0.25);
+
+      // Core listening inward lines fade out (50% to 60%)
+      tl.to(coreState, {
+        pulse: 0,
+        onUpdate: () => {
+          setPulseOpacity(coreState.pulse);
+        },
+        duration: 0.10,
+      }, 0.50);
+
+      // Chip 1 animation: drift from left outer point, scale down, and fade out into the Core (25% to 42%)
+      const coreCenterX = targetRect.left + targetRect.width / 2;
+      const coreCenterY = targetRect.top + targetRect.height / 2;
+
+      tl.fromTo(chip1Ref.current, {
+        left: "15%",
+        top: "35%",
+        opacity: 0,
+        scale: 1.1,
+      }, {
+        left: coreCenterX - 80, // Offset slightly to absorb organically
+        top: coreCenterY - 10,
+        opacity: 1,
+        scale: 0.85,
+        duration: 0.15,
+        ease: "power1.in",
+      }, 0.25);
+
+      tl.to(chip1Ref.current, {
+        opacity: 0,
+        scale: 0.5,
+        duration: 0.05,
+      }, 0.40);
+
+      // Chip 2 animation: drift from right outer point, scale down, and fade out into the Core (35% to 52%)
+      tl.fromTo(chip2Ref.current, {
+        left: "75%",
+        top: "60%",
+        opacity: 0,
+        scale: 1.1,
+      }, {
+        left: coreCenterX - 80,
+        top: coreCenterY - 10,
+        opacity: 1,
+        scale: 0.85,
+        duration: 0.15,
+        ease: "power1.in",
+      }, 0.35);
+
+      tl.to(chip2Ref.current, {
+        opacity: 0,
+        scale: 0.5,
+        duration: 0.05,
+      }, 0.50);
+
+      // Beat 2 Narrative Copy: fade in (35% to 48%) and fade out (52% to 60%)
+      tl.fromTo(beat2CopyRef.current, {
+        opacity: 0,
+        y: 20,
+      }, {
+        opacity: 1,
+        y: 0,
+        duration: 0.13,
+        ease: "power2.out",
+      }, 0.35);
+
+      tl.to(beat2CopyRef.current, {
+        opacity: 0,
+        y: -20,
+        duration: 0.08,
+        ease: "power2.in",
+      }, 0.52);
+
       // Keep timeline alive for future beats
-      tl.to({}, { duration: 1 }, 0.25);
+      tl.to({}, { duration: 1 }, 0.60);
     });
 
     return () => {
@@ -267,7 +364,7 @@ export default function ScrollDemo() {
               >
                 {(isMobile || reduceMotion) && (
                   <div ref={coreWrapperRef} className="w-24 h-24 flex items-center justify-center">
-                    <Core className="w-full h-full" />
+                    <Core className="w-full h-full" tealOpacity={1} pulseOpacity={1} />
                   </div>
                 )}
                 
@@ -285,6 +382,23 @@ export default function ScrollDemo() {
 
           </div>
 
+          {/* Mobile/Reduced Motion sequential content */}
+          {(isMobile || reduceMotion) && (
+            <div className="w-full max-w-4xl px-4 mt-12 flex flex-col items-center space-y-6">
+              <div className="flex flex-wrap gap-3 justify-center">
+                <span className="font-mono text-xs bg-slate/90 border border-white/10 px-3 py-1.5 rounded-full text-glacier-teal">
+                  Q3 roadmap — May 12
+                </span>
+                <span className="font-mono text-xs bg-slate/90 border border-white/10 px-3 py-1.5 rounded-full text-glacier-teal">
+                  Client sync — last Tuesday
+                </span>
+              </div>
+              <p className="font-body text-base text-moon/85 text-center max-w-xl leading-relaxed">
+                Lyka already knows what was discussed. It flags when an agenda is drifting — or when a meeting could have been an email.
+              </p>
+            </div>
+          )}
+
         </div>
 
         {/* Absolute Core Wrapper for Pinned Scroll Animations */}
@@ -293,7 +407,39 @@ export default function ScrollDemo() {
             ref={coreWrapperRef}
             className="absolute pointer-events-none z-30 flex items-center justify-center transition-all duration-75"
           >
-            <Core className="w-full h-full" />
+            <Core
+              className="w-full h-full"
+              tealOpacity={tealOpacity}
+              pulseOpacity={pulseOpacity}
+            />
+          </div>
+        )}
+
+        {/* Beat 2 Floating Chips (Desktop Pinned) */}
+        {!(isMobile || reduceMotion) && (
+          <>
+            <div
+              ref={chip1Ref}
+              className="absolute font-mono text-[11px] bg-slate/90 border border-white/10 px-4 py-2 rounded-full text-moon/80 opacity-0 pointer-events-none z-20 shadow-xl backdrop-blur-sm"
+            >
+              Q3 roadmap — May 12
+            </div>
+            <div
+              ref={chip2Ref}
+              className="absolute font-mono text-[11px] bg-slate/90 border border-white/10 px-4 py-2 rounded-full text-moon/80 opacity-0 pointer-events-none z-20 shadow-xl backdrop-blur-sm"
+            >
+              Client sync — last Tuesday
+            </div>
+          </>
+        )}
+
+        {/* Beat 2 Narrative Copy (Desktop Pinned) */}
+        {!(isMobile || reduceMotion) && (
+          <div
+            ref={beat2CopyRef}
+            className="absolute bottom-16 md:bottom-20 max-w-2xl text-center font-body text-lg md:text-xl text-moon/85 opacity-0 px-6 leading-relaxed pointer-events-none"
+          >
+            Lyka already knows what was discussed. It flags when an agenda is drifting — or when a meeting could have been an email.
           </div>
         )}
 

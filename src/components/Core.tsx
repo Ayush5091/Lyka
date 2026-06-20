@@ -6,9 +6,16 @@ import { cn } from "@/lib/utils";
 interface CoreProps {
   className?: string;
   size?: number;
+  tealOpacity?: number; // Beat 2: opacity of glacier-teal context state
+  pulseOpacity?: number; // Beat 2: opacity of inward pulsing lines
 }
 
-export default function Core({ className, size = 320 }: CoreProps) {
+export default function Core({
+  className,
+  size = 320,
+  tealOpacity = 0,
+  pulseOpacity = 0,
+}: CoreProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -33,12 +40,18 @@ export default function Core({ className, size = 320 }: CoreProps) {
       )}
       style={hasCustomSize ? undefined : { width: size, height: size }}
     >
-      {/* Background glow shadow layer */}
+      {/* Background glow shadow layer (Dusk Indigo / default) */}
       <div
         className={cn(
           "absolute inset-0 rounded-full bg-gradient-to-r from-dusk-indigo to-glacier-teal opacity-35 blur-3xl transition-all duration-1000",
           !reduceMotion && "animate-[pulse_4s_cubic-bezier(0.45,0,0.15,1)_infinite]"
         )}
+      />
+
+      {/* Layered Glacier Teal background glow for Beat 2 */}
+      <div
+        className="absolute inset-0 rounded-full bg-glacier-teal blur-3xl transition-opacity duration-300"
+        style={{ opacity: tealOpacity * 0.4 }}
       />
 
       {/* Main living SVG Orb */}
@@ -50,12 +63,20 @@ export default function Core({ className, size = 320 }: CoreProps) {
         )}
       >
         <defs>
-          {/* Main radial gradient forming the base color representation */}
-          <radialGradient id="core-grad" cx="45%" cy="40%" r="55%" fx="35%" fy="30%">
+          {/* Default radial gradient (dusk-indigo state) */}
+          <radialGradient id="core-indigo" cx="45%" cy="40%" r="55%" fx="35%" fy="30%">
             <stop offset="0%" stopColor="#8F85FF" />
             <stop offset="35%" stopColor="var(--dusk-indigo)" />
-            <stop offset="75%" stopColor="var(--glacier-teal)" />
-            <stop offset="100%" stopColor="#0B2B26" />
+            <stop offset="75%" stopColor="#2D1BA3" />
+            <stop offset="100%" stopColor="#0A0B10" />
+          </radialGradient>
+
+          {/* Teal radial gradient (glacier-teal state) */}
+          <radialGradient id="core-teal" cx="45%" cy="40%" r="55%" fx="35%" fy="30%">
+            <stop offset="0%" stopColor="#80FFF0" />
+            <stop offset="35%" stopColor="var(--glacier-teal)" />
+            <stop offset="75%" stopColor="#0B5C52" />
+            <stop offset="100%" stopColor="#0A0B10" />
           </radialGradient>
 
           {/* Organic displacement map to distort the orb edges */}
@@ -87,14 +108,67 @@ export default function Core({ className, size = 320 }: CoreProps) {
           </filter>
         </defs>
 
-        {/* The Core shape */}
+        {/* Base Layer: Dusk Indigo */}
         <circle
           cx="100"
           cy="100"
           r="80"
-          fill="url(#core-grad)"
+          fill="url(#core-indigo)"
           filter="url(#organic-deform)"
         />
+
+        {/* Transition Overlay Layer: Glacier Teal */}
+        <circle
+          cx="100"
+          cy="100"
+          r="80"
+          fill="url(#core-teal)"
+          filter="url(#organic-deform)"
+          style={{ opacity: tealOpacity }}
+          className="transition-opacity duration-75"
+        />
+
+        {/* Beat 2 Inward Curved Pulsing Lines ("Listening Inward") */}
+        {!reduceMotion && (
+          <g style={{ opacity: pulseOpacity }} className="transition-opacity duration-300 pointer-events-none">
+            <path
+              d="M 50,50 Q 80,70 100,100"
+              fill="none"
+              stroke="var(--glacier-teal)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              className="animate-[pulse-in_2.5s_infinite_linear]"
+              style={{ strokeDasharray: "15, 100" }}
+            />
+            <path
+              d="M 150,50 Q 120,70 100,100"
+              fill="none"
+              stroke="var(--glacier-teal)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              className="animate-[pulse-in_2.5s_infinite_linear_0.6s]"
+              style={{ strokeDasharray: "15, 100" }}
+            />
+            <path
+              d="M 50,150 Q 80,130 100,100"
+              fill="none"
+              stroke="var(--glacier-teal)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              className="animate-[pulse-in_2.5s_infinite_linear_1.2s]"
+              style={{ strokeDasharray: "15, 100" }}
+            />
+            <path
+              d="M 150,150 Q 120,130 100,100"
+              fill="none"
+              stroke="var(--glacier-teal)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              className="animate-[pulse-in_2.5s_infinite_linear_1.8s]"
+              style={{ strokeDasharray: "15, 100" }}
+            />
+          </g>
+        )}
       </svg>
     </div>
   );
