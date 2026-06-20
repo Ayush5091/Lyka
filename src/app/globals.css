@@ -81,34 +81,6 @@ body {
   border: 1px solid var(--border);
 }
 
-@keyframes breathe {
-  0%, 100% {
-    transform: scale(0.95);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 1;
-  }
-}
-
-@keyframes pulse-in {
-  0% {
-    stroke-dashoffset: 100;
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.6;
-  }
-  85% {
-    opacity: 0.6;
-  }
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
-}
-
 @keyframes slide-in {
   from { transform: translate(10px, -50%); opacity: 0; }
   to { transform: translate(0, -50%); opacity: 1; }
@@ -122,17 +94,4 @@ body {
 @keyframes scale-up {
   from { transform: scale(0); }
   to { transform: scale(1); }
-}
-
-@keyframes core-entrance {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-    filter: blur(16px);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-    filter: blur(0);
-  }
 }

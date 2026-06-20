@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navigation from "@/components/Navigation";
+import ClientLayout from "@/components/ClientLayout";
 
 const fraunces = Fraunces({
   variable: "--font-display",
@@ -45,10 +46,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SmoothScroll>
-            <Navigation />
-            {children}
-          </SmoothScroll>
+          <ClientLayout>
+            <SmoothScroll>
+              <Navigation />
+              {children}
+            </SmoothScroll>
+          </ClientLayout>
           <Toaster position="top-right" />
         </ThemeProvider>
       </body>
