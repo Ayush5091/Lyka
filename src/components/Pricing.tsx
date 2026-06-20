@@ -6,6 +6,20 @@ import Button from "./Button";
 import { cn } from "@/lib/utils";
 
 export default function Pricing() {
+  const [reduceMotion, setReduceMotion] = React.useState(false);
+
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduceMotion(mediaQuery.matches);
+    
+    const handler = (e: MediaQueryListEvent) => {
+      setReduceMotion(e.matches);
+    };
+    
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
   const tiers = [
     {
       name: "Free trial",
@@ -74,10 +88,17 @@ export default function Pricing() {
           <div
             key={tier.name}
             className={cn(
-              "relative flex flex-col justify-between p-8 rounded-2xl bg-slate/50 border backdrop-blur-sm transition-all duration-300",
+              "relative flex flex-col justify-between p-8 rounded-2xl bg-slate/50 border backdrop-blur-sm",
+              !reduceMotion && "transition-all duration-300",
               tier.isRecommended
-                ? "border-ember-coral/30 shadow-2xl shadow-ember-coral/5 md:scale-[1.03] lg:scale-[1.05] z-10 hover:border-ember-coral/60"
-                : "border-white/5 hover:border-white/10 hover:bg-slate/60"
+                ? cn(
+                    "border-ember-coral/30 shadow-2xl shadow-ember-coral/5 z-10",
+                    !reduceMotion ? "md:scale-[1.03] lg:scale-[1.05] hover:border-ember-coral/60" : "scale-100"
+                  )
+                : cn(
+                    "border-white/5",
+                    !reduceMotion && "hover:border-white/10 hover:bg-slate/60"
+                  )
             )}
           >
             <div>

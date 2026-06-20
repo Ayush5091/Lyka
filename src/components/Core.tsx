@@ -19,6 +19,7 @@ export default function Core({
   coralOpacity = 0,
 }: CoreProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [isAnimatingEntrance, setIsAnimatingEntrance] = useState(true);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -31,6 +32,17 @@ export default function Core({
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setIsAnimatingEntrance(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setIsAnimatingEntrance(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [reduceMotion]);
 
   const hasCustomSize = className?.split(" ").some(c => c.startsWith("w-") || c.startsWith("h-") || c.startsWith("lg:w-") || c.startsWith("xl:w-") || c.startsWith("sm:w-") || c.startsWith("md:w-"));
 
@@ -46,7 +58,8 @@ export default function Core({
       <div
         className={cn(
           "absolute inset-0 rounded-full bg-gradient-to-r from-dusk-indigo to-glacier-teal opacity-35 blur-3xl transition-all duration-1000",
-          !reduceMotion && "animate-[pulse_4s_cubic-bezier(0.45,0,0.15,1)_infinite]"
+          !reduceMotion && !isAnimatingEntrance && "animate-[pulse_4s_cubic-bezier(0.45,0,0.15,1)_infinite]",
+          !reduceMotion && isAnimatingEntrance && "scale-0 opacity-0 animate-[core-entrance_1.5s_cubic-bezier(0.45,0,0.15,1)_forwards]"
         )}
       />
 
@@ -67,7 +80,8 @@ export default function Core({
         viewBox="0 0 200 200"
         className={cn(
           "w-full h-full relative z-10 origin-center transition-transform duration-1000",
-          !reduceMotion && "animate-[breathe_4s_cubic-bezier(0.45,0,0.15,1)_infinite]"
+          !reduceMotion && isAnimatingEntrance && "animate-[core-entrance_1.5s_cubic-bezier(0.45,0,0.15,1)_forwards]",
+          !reduceMotion && !isAnimatingEntrance && "animate-[breathe_4s_cubic-bezier(0.45,0,0.15,1)_infinite]"
         )}
       >
         <defs>

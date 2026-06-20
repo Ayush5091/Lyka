@@ -17,7 +17,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        "relative inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-dusk-indigo/50 cursor-pointer",
+        "relative inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-void focus-visible:ring-ember-coral cursor-pointer",
         variant === "primary" &&
           "bg-ember-coral text-void hover:bg-opacity-90 active:scale-[0.98] transition-transform",
         variant === "ghost" &&

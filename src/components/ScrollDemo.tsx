@@ -642,6 +642,8 @@ export default function ScrollDemo() {
               return (
                 <div
                   key={app.id}
+                  role="img"
+                  aria-label={`${app.id} integration`}
                   className={cn(
                     "absolute w-12 h-12 rounded-xl flex items-center justify-center backdrop-blur-sm transition-all duration-500 shadow-xl",
                     active
@@ -654,7 +656,7 @@ export default function ScrollDemo() {
                     color: active ? iconData.color : "var(--moon)",
                   }}
                 >
-                  <svg viewBox={iconData.viewBox} className="w-6 h-6" fill="currentColor">
+                  <svg viewBox={iconData.viewBox} className="w-6 h-6" fill="currentColor" aria-hidden="true">
                     <path d={iconData.path} />
                   </svg>
 

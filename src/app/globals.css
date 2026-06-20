@@ -123,3 +123,16 @@ body {
   from { transform: scale(0); }
   to { transform: scale(1); }
 }
+
+@keyframes core-entrance {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+    filter: blur(16px);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
